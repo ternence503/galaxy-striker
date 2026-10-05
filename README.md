@@ -2,7 +2,7 @@
 
 > 純瀏覽器飛機射擊遊戲，無需安裝任何軟體，下載即玩！
 
-![遊戲截圖](https://ternence503.github.io/galaxy-striker/)
+<p align="center"><img src="screenshot.jpg" alt="遊戲畫面：第 1 關 Boss 戰" width="360"></p>
 
 ---
 
@@ -11,6 +11,10 @@
 點這個連結，用瀏覽器開啟就能玩：
 
 👉 **https://ternence503.github.io/galaxy-striker/**
+
+📱 **手機掃這個就能玩**（支援觸控，手指拖曳移動，自動射擊）：
+
+<p align="center"><img src="qrcode.png" alt="QR code：線上玩" width="180"></p>
 
 ---
 
