@@ -186,6 +186,8 @@ let screenShake = 0;
 // ─── Audio ───────────────────────────────────────────────
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let audioEnabled = true;
+// 音效按鈕：48×44，符合觸控最小 44px；繪製與點擊判定共用同一組座標
+const SOUND_BTN = {x: 480-54, y: 640-52, w: 48, h: 44};
 
 function playSound(type) {
   if (!audioEnabled) return;
@@ -429,7 +431,7 @@ canvas.addEventListener('click', e => {
   const cx = (e.clientX - rect.left) * (W / rect.width);
   const cy = (e.clientY - rect.top) * (H / rect.height);
   // 點擊音效按鈕
-  if(cx >= W-42 && cx <= W-6 && cy >= H-30 && cy <= H-8){
+  if(cx >= SOUND_BTN.x && cx <= SOUND_BTN.x+SOUND_BTN.w && cy >= SOUND_BTN.y && cy <= SOUND_BTN.y+SOUND_BTN.h){
     audioEnabled = !audioEnabled;
     if(audioEnabled) audioCtx.resume();
   }
@@ -894,13 +896,15 @@ function drawHUD(){
 
   // Sound toggle button
   ctx.fillStyle = audioEnabled ? 'rgba(0,100,50,0.7)' : 'rgba(80,0,0,0.7)';
-  ctx.fillRect(W-42, H-30, 36, 22);
+  ctx.fillRect(SOUND_BTN.x, SOUND_BTN.y, SOUND_BTN.w, SOUND_BTN.h);
   ctx.strokeStyle = audioEnabled ? '#00ff88' : '#ff4444';
-  ctx.lineWidth=1; ctx.strokeRect(W-42, H-30, 36, 22);
+  ctx.lineWidth=1.5; ctx.strokeRect(SOUND_BTN.x, SOUND_BTN.y, SOUND_BTN.w, SOUND_BTN.h);
   ctx.fillStyle = 'white';
-  ctx.font = '13px Arial';
+  ctx.font = '24px Arial';
   ctx.textAlign = 'center';
-  ctx.fillText(audioEnabled ? '🔊' : '🔇', W-24, H-14);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(audioEnabled ? '🔊' : '🔇', SOUND_BTN.x+SOUND_BTN.w/2, SOUND_BTN.y+SOUND_BTN.h/2+1);
+  ctx.textBaseline = 'alphabetic';
 }
 
 // ─── Collision detection ──────────────────────────────────
