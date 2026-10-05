@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>星域獵人 - 飛機射擊遊戲</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,8 +14,13 @@
     min-height: 100vh;
     font-family: 'Arial', sans-serif;
     overflow: hidden;
+    touch-action: none;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
   #gameContainer {
+    touch-action: none;
     position: relative;
     width: 480px;
     height: 640px;
@@ -388,14 +393,37 @@ document.addEventListener('keydown', e => {
   }
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
-canvas.addEventListener('mousemove', e => {
+// Pointer Events：滑鼠、觸控、觸控筆共用。觸控時飛機停在手指上方，避免被手指擋住
+const TOUCH_OFFSET_Y = 60;
+function pointerToGame(e){
   const rect = canvas.getBoundingClientRect();
   let nx = (e.clientX - rect.left) * (W / rect.width);
   let ny = (e.clientY - rect.top) * (H / rect.height);
-  // 只有滑鼠真的移動超過 3px 才切換成滑鼠模式
-  if(Math.hypot(nx - mouseX, ny - mouseY) > 3) useMouse = true;
+  if(e.pointerType === 'touch') ny -= TOUCH_OFFSET_Y;
+  nx = Math.max(0, Math.min(W, nx));
+  ny = Math.max(0, Math.min(H, ny));
+  return [nx, ny];
+}
+canvas.addEventListener('pointermove', e => {
+  const [nx, ny] = pointerToGame(e);
+  // 滑鼠要真的移動超過 3px 才切換成滑鼠模式；觸控一動就切換
+  if(e.pointerType === 'touch' || Math.hypot(nx - mouseX, ny - mouseY) > 3) useMouse = true;
   mouseX = nx; mouseY = ny;
 });
+canvas.addEventListener('pointerdown', e => {
+  if(e.pointerType !== 'touch') return;
+  [mouseX, mouseY] = pointerToGame(e);
+  useMouse = true;
+});
+// 依視窗大小等比例縮小整個遊戲畫面（只縮小不放大）
+function fitGame(){
+  const box = document.getElementById('gameContainer');
+  const s = Math.min(1, window.innerWidth / (W + 4), window.innerHeight / (H + 4));
+  box.style.transform = s < 1 ? `scale(${s})` : '';
+}
+window.addEventListener('resize', fitGame);
+window.addEventListener('orientationchange', fitGame);
+fitGame();
 canvas.addEventListener('click', e => {
   const rect = canvas.getBoundingClientRect();
   const cx = (e.clientX - rect.left) * (W / rect.width);
